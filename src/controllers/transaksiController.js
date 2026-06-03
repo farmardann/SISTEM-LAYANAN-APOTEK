@@ -1,3 +1,4 @@
+import * as TransaksiModel from "../models/transaksiModel.js";
 import validator from "../validators/validator.js";
 import {
   transaksiSchema,

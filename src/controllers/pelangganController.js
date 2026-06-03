@@ -1,3 +1,4 @@
+import * as PelangganModel from "../models/pelangganModel.js";
 import validator from "../validators/validator.js";
 import {
   pelangganSchema,

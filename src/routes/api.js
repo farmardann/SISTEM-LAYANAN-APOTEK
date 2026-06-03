@@ -11,6 +11,7 @@ router.post("/auth", authController.login);
 
 // Obat
 router.get("/obat", jwtAuth, ObatController.index);
+router.get("/obat/:id", jwtAuth, ObatController.show);
 router.post("/obat", jwtAuth, ObatController.store);
 router.put("/obat/:id", jwtAuth, ObatController.update);
 router.delete("/obat/:id", jwtAuth, ObatController.destroy);
