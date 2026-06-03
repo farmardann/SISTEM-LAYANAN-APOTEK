@@ -9,6 +9,18 @@ export const getAllTransaksi = () => {
   });
 };
 
+export const getTransaksiById = (id) => {
+  return prismaClient.transaksi.findUnique({
+    where: {
+      id: Number(id),
+    },
+    include: {
+      obat: true,
+      pelanggan: true,
+    },
+  });
+};
+
 export const createTransaksi = (data) => {
   return prismaClient.transaksi.create({
     data: {

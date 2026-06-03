@@ -18,12 +18,14 @@ router.delete("/obat/:id", jwtAuth, ObatController.destroy);
 
 // Pelanggan
 router.get("/pelanggan", jwtAuth, PelangganController.index);
+router.get("/pelanggan/:id", jwtAuth, PelangganController.show);
 router.post("/pelanggan", jwtAuth, PelangganController.store);
 router.put("/pelanggan/:id", jwtAuth, PelangganController.update);
 router.delete("/pelanggan/:id", jwtAuth, PelangganController.destroy);
 
 // Transaksi
 router.get("/transaksi", jwtAuth, TransaksiController.index);
+router.get("/transaksi/:id", jwtAuth, TransaksiController.show);
 router.post("/transaksi", jwtAuth, TransaksiController.store);
 router.delete("/transaksi/:id", jwtAuth, TransaksiController.destroy);
 

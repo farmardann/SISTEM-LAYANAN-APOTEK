@@ -23,7 +23,16 @@ export const index = async (req, res) => {
 export const show = async (req, res) => {
   try {
     const { id } = req.params;
+
     const data = await TransaksiModel.getTransaksiById(id);
+
+    if (!data) {
+      return res.status(404).json({
+        success: false,
+        message: "Transaksi tidak ditemukan",
+      });
+    }
+
     res.status(200).json({
       success: true,
       data,
