@@ -1,4 +1,3 @@
-import { body } from "express-validator";
 import joi from "joi";
 
 export const transaksiSchema = joi.object({
