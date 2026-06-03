@@ -123,6 +123,13 @@ export const destroy = async (req, res) => {
 
     const data = await PelangganModel.deletePelanggan(id);
 
+    if (!data) {
+      return res.status(404).json({
+        success: false,
+        message: "Pelanggan tidak ditemukan",
+      });
+    }
+    
     res.status(200).json({
       success: true,
       message: "Pelanggan berhasil dihapus",

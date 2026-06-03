@@ -24,7 +24,7 @@ export const updatePelanggan = (id, data) => {
 };
 
 export const deletePelanggan = (id) => {
-  return prismaClient.pelanggan.delete({
+  return prismaClient.pelanggan.findUnique({
     where: { id: Number(id) },
   });
 };

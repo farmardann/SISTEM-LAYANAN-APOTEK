@@ -86,6 +86,13 @@ export const destroy = async (req, res) => {
 
     const data = await TransaksiModel.deleteTransaksi(id);
 
+    if (!data) {
+      return res.status(404).json({
+        success: false,
+        message: "Transaksi tidak ditemukan",
+      });
+    }
+
     res.status(200).json({
       success: true,
       message: "Transaksi berhasil dihapus",

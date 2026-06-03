@@ -47,7 +47,6 @@ export const show = async (req, res) => {
 export const store = async (req, res) => {
   try {
     const { body } = req;
-
     if (!body || Object.keys(body).length === 0) {
       return res.status(400).json({
         success: false,
@@ -84,7 +83,13 @@ export const update = async (req, res) => {
   try {
     const { id } = req.params;
     const { body } = req;
-
+    const data_id = await ObatModel.getObatById(id);
+    if (!data_id) {
+      return res.status(404).json({
+        success: false,
+        message: "Obat tidak ditemukan",
+      });
+    }
     if (!body || Object.keys(body).length === 0) {
       return res.status(400).json({
         success: false,
@@ -121,8 +126,15 @@ export const destroy = async (req, res) => {
   try {
     const { id } = req.params;
 
-    await ObatModel.deleteObat(id);
+    const data = await ObatModel.deleteObat(id);
 
+    if (!data) {
+      return res.status(404).json({
+        success: false,
+        message: "Obat tidak ditemukan",
+      });
+    }
+    
     res.status(200).json({
       success: true,
       message: "Obat berhasil dihapus",
