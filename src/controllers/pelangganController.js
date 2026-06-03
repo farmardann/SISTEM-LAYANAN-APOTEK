@@ -3,21 +3,40 @@ import {
   pelangganSchema,
 } from "../validators/pelangganValidator.js";
 
-export const index = (req, res) => {
-  res.json({
-    success: true,
-    message: "GET semua pelanggan",
-  });
+export const index = async (req, res) => {
+  try {
+    const data = await PelangganModel.getAllPelanggan();
+    res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
-export const show = (req, res) => {
-  res.json({
-    success: true,
-    message: `GET pelanggan ${req.params.id}`,
-  });
+
+export const show = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await PelangganModel.getPelangganById(id);
+    res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
-export const store = (req, res) => {
+export const store = async (req, res) => {
+  try {
   const { body } = req;
 
   if (!body || Object.keys(body).length === 0) {
@@ -36,23 +55,73 @@ export const store = (req, res) => {
     });
   }
 
+  const data = await PelangganModel.createPelanggan(value);
+  
   return res.status(201).json({
     success: true,
     message: "Tambah pelanggan berhasil",
-    data: value,
+    data,
   });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
-export const update = (req, res) => {
-  res.json({
-    success: true,
-    message: `Update pelanggan ${req.params.id}`,
-  });
+export const update = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { body } = req;
+
+    if (!body || Object.keys(body).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Data tidak lengkap",
+      });
+    }
+
+    const { error, value } = validator(pelangganSchema, body);
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        errors: error,
+      });
+    }
+
+    const data = await PelangganModel.updatePelanggan(id, value);
+
+    res.status(200).json({
+      success: true,
+      message: "Pelanggan berhasil diupdate",
+      data,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
-export const destroy = (req, res) => {
-  res.json({
-    success: true,
-    message: `Hapus pelanggan ${req.params.id}`,
-  });
+export const destroy = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const data = await PelangganModel.deletePelanggan(id);
+
+    res.status(200).json({
+      success: true,
+      message: "Pelanggan berhasil dihapus",
+      data,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
