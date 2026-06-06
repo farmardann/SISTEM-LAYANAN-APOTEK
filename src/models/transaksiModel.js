@@ -13,7 +13,7 @@ export const getTransaksiById = (id) => {
   return prismaClient.transaksi.findUnique({
     where: {
       id: Number(id),
-    }
+    },
   });
 };
 
@@ -25,7 +25,7 @@ export const createTransaksi = (data) => {
       jumlah: Number(data.jumlah),
       total_harga: Number(data.total_harga),
       harga_satuan: Number(data.harga_satuan),
-      tanggal:data.tanggal,
+      tanggal: data.tanggal,
       kode_transaksi: data.kode_transaksi,
       metode_bayar: data.metode_bayar,
       status: data.status,
@@ -34,9 +34,9 @@ export const createTransaksi = (data) => {
 };
 
 export const deleteTransaksi = (id) => {
-  return prismaClient.transaksi.findUnique({
+  return prismaClient.transaksi.delete({
     where: {
       id: Number(id),
-    }
+    },
   });
 };

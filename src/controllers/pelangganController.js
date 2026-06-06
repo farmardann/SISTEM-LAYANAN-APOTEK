@@ -85,7 +85,13 @@ export const update = async (req, res) => {
   try {
     const { id } = req.params;
     const { body } = req;
-
+    const data_id = await PelangganModel.getPelangganById(id);
+    if (!data_id) {
+      return res.status(404).json({
+        success: false,
+        message: "Pelanggan tidak ditemukan",
+      });
+    }
     if (!body || Object.keys(body).length === 0) {
       return res.status(400).json({
         success: false,

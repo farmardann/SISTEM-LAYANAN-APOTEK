@@ -24,7 +24,7 @@ export const updateObat = (id, data) => {
 };
 
 export const deleteObat = (id) => {
-  return prismaClient.obat.findUnique({
+  return prismaClient.obat.delete({
     where: { id: Number(id) },
   });
 };
