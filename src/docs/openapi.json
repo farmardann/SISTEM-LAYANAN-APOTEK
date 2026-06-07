@@ -1,0 +1,548 @@
+﻿{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Sistem Layanan Apotek API",
+    "version": "1.0.0",
+    "description": "API dokumentasi untuk pengujian layanan apotek dengan autentikasi JWT."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:2026/api",
+      "description": "Local server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "AuthLogin": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "admin@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "secret123"
+          }
+        },
+        "required": ["email", "password"]
+      },
+      "Obat": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "nama_obat": { "type": "string", "example": "Paracetamol" },
+          "kategori": { "type": "string", "example": "Demam" },
+          "stok": { "type": "integer", "example": 100 },
+          "deskripsi": { "type": "string", "example": "Obat pereda demam." },
+          "harga_beli": { "type": "integer", "example": 15000 },
+          "harga_jual": { "type": "integer", "example": 20000 },
+          "kode_obat": { "type": "string", "example": "PAR-001" },
+          "satuan": { "type": "string", "example": "Tablet" },
+          "supplier": { "type": "string", "example": "PT Apotek Sehat" },
+          "tanggal_expired": { "type": "string", "format": "date-time", "example": "2028-10-15T00:00:00.000Z" },
+          "tanggal_masuk": { "type": "string", "format": "date-time", "example": "2026-06-01T00:00:00.000Z" }
+        }
+      },
+      "Pelanggan": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "nama": { "type": "string", "example": "Budi Santoso" },
+          "alamat": { "type": "string", "example": "Jl. Merdeka No. 1" },
+          "no_telepon": { "type": "string", "example": "08123456789" },
+          "email": { "type": "string", "example": "budi@example.com" },
+          "jenis_kelamin": { "type": "string", "example": "L" },
+          "kode_member": { "type": "string", "example": "MBR-2026-002" }
+        }
+      },
+      "Transaksi": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "jumlah": { "type": "integer", "example": 5 },
+          "total_harga": { "type": "integer", "example": 105000 },
+          "tanggal": { "type": "string", "format": "date-time", "example": "2026-06-03T13:00:00.000Z" },
+          "obatId": { "type": "integer", "example": 1 },
+          "pelangganId": { "type": "integer", "example": 1 },
+          "harga_satuan": { "type": "integer", "example": 21000 },
+          "kode_transaksi": { "type": "string", "example": "TRX-20260603-001" },
+          "metode_bayar": { "type": "string", "example": "Tunai" },
+          "status": { "type": "string", "example": "Sukses" }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": false },
+          "message": { "type": "string", "example": "Deskripsi error" }
+        }
+      }
+    }
+  },
+  "tags": [
+    { "name": "auth", "description": "Autentikasi pengguna" },
+    { "name": "obat", "description": "Manajemen obat" },
+    { "name": "pelanggan", "description": "Manajemen pelanggan" },
+    { "name": "transaksi", "description": "Manajemen transaksi" }
+  ],
+  "paths": {
+    "/auth": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Login pengguna",
+        "description": "Menghasilkan token JWT untuk autentikasi API.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AuthLogin" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login sukses",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": true,
+                  "message": "Login Success",
+                  "data": {
+                    "id": 1,
+                    "name": "admin",
+                    "email": "admin@example.com",
+                    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Password salah atau kosong",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "User tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/obat": {
+      "get": {
+        "tags": ["obat"],
+        "summary": "Dapatkan semua obat",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Daftar obat berhasil diambil",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": [ { "$ref": "#/components/schemas/Obat" } ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["obat"],
+        "summary": "Buat obat baru",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nama_obat": { "type": "string" },
+                  "kategori": { "type": "string" },
+                  "stok": { "type": "integer" },
+                  "deskripsi": { "type": "string" },
+                  "harga_beli": { "type": "integer" },
+                  "harga_jual": { "type": "integer" },
+                  "kode_obat": { "type": "string" },
+                  "satuan": { "type": "string" },
+                  "supplier": { "type": "string" },
+                  "tanggal_expired": { "type": "string", "format": "date-time" },
+                  "tanggal_masuk": { "type": "string", "format": "date-time" }
+                },
+                "required": ["nama_obat", "kategori", "stok", "harga_beli", "harga_jual", "kode_obat", "satuan", "supplier", "tanggal_expired", "tanggal_masuk"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Obat berhasil ditambahkan",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Obat" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validasi gagal",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/obat/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer" }
+        }
+      ],
+      "get": {
+        "tags": ["obat"],
+        "summary": "Dapatkan obat berdasarkan ID",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Obat ditemukan",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Obat" }
+              }
+            }
+          },
+          "404": {
+            "description": "Obat tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["obat"],
+        "summary": "Update obat berdasarkan ID",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Obat" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Obat berhasil diupdate",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Obat" }
+              }
+            }
+          },
+          "404": {
+            "description": "Obat tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["obat"],
+        "summary": "Hapus obat berdasarkan ID",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Obat berhasil dihapus",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Obat berhasil dihapus"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Obat tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pelanggan": {
+      "get": {
+        "tags": ["pelanggan"],
+        "summary": "Dapatkan semua pelanggan",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Daftar pelanggan berhasil diambil",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": [ { "$ref": "#/components/schemas/Pelanggan" } ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["pelanggan"],
+        "summary": "Buat pelanggan baru",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Pelanggan" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Pelanggan berhasil ditambahkan",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Pelanggan" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pelanggan/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer" }
+        }
+      ],
+      "get": {
+        "tags": ["pelanggan"],
+        "summary": "Dapatkan pelanggan berdasarkan ID",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Pelanggan ditemukan",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Pelanggan" }
+              }
+            }
+          },
+          "404": {
+            "description": "Pelanggan tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["pelanggan"],
+        "summary": "Update pelanggan berdasarkan ID",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Pelanggan" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pelanggan berhasil diupdate",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Pelanggan" }
+              }
+            }
+          },
+          "404": {
+            "description": "Pelanggan tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["pelanggan"],
+        "summary": "Hapus pelanggan berdasarkan ID",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Pelanggan berhasil dihapus",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Pelanggan berhasil dihapus"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pelanggan tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transaksi": {
+      "get": {
+        "tags": ["transaksi"],
+        "summary": "Dapatkan semua transaksi",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Daftar transaksi berhasil diambil",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": [ { "$ref": "#/components/schemas/Transaksi" } ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["transaksi"],
+        "summary": "Buat transaksi baru",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Transaksi" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Transaksi berhasil dibuat",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Transaksi" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validasi gagal",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transaksi/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer" }
+        }
+      ],
+      "get": {
+        "tags": ["transaksi"],
+        "summary": "Dapatkan transaksi berdasarkan ID",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Transaksi ditemukan",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Transaksi" }
+              }
+            }
+          },
+          "404": {
+            "description": "Transaksi tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["transaksi"],
+        "summary": "Hapus transaksi berdasarkan ID",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Transaksi berhasil dihapus",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Transaksi berhasil dihapus"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Transaksi tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
