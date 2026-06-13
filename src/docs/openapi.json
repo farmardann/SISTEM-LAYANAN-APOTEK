@@ -25,11 +25,11 @@
         "properties": {
           "email": {
             "type": "string",
-            "example": "admin@example.com"
+            "example": "admin@apotek.ac.id"
           },
           "password": {
             "type": "string",
-            "example": "secret123"
+            "example": "password123"
           }
         },
         "required": ["email", "password"]
@@ -118,7 +118,7 @@
                   "data": {
                     "id": 1,
                     "name": "admin",
-                    "email": "admin@example.com",
+                    "email": "admin@apotek.ac.id",
                     "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
                   }
                 }
