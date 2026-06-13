@@ -1,6 +1,5 @@
 # SISTEM LAYANAN APOTEK
-
-Singkat: backend API untuk layanan apotek — mengelola obat, pelanggan, dan transaksi. Dibangun dengan Node.js, Express, dan Prisma.
+Backend API untuk layanan apotek — mengelola obat, pelanggan, dan transaksi. Dibangun dengan Node.js, Express, dan Prisma.
 
 ## Teknologi
 - Node.js
