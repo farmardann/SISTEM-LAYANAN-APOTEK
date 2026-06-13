@@ -88,7 +88,3 @@ npm run dev
 ## Debugging & Logs
 - Lihat output terminal saat menjalankan `npm run dev`.
 - Periksa koneksi database jika ada error terkait DB.
-
-## Kontak & Kontribusi
-- Untuk perubahan dokumentasi atau penambahan endpoint, beri tahu saya detail yang ingin ditambahkan.
-
